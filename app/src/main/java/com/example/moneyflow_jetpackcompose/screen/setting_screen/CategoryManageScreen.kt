@@ -97,7 +97,8 @@ fun CategoryManageScreen(navController: NavController) {
                 }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
+                        contentDescription = "Back",
+                        tint = if (isDarkTheme) Color.White else Color.Black
                     )
                 }
             },
@@ -143,6 +144,14 @@ fun CategoryManageScreen(navController: NavController) {
 
 @Composable
 fun CategoryItem(category: CategoryModel, navController: NavController) {
+    val context = LocalContext.current
+    var themePreference = ThemePreference(context)
+    val themeMode = themePreference.themeFlow.collectAsState(initial = ThemeMode.SYSTEM.value).value
+    val isDarkTheme = when (ThemeMode.fromInt(themeMode)) {
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -170,7 +179,7 @@ fun CategoryItem(category: CategoryModel, navController: NavController) {
             Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = category.categoryName,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge.copy(color = if (isDarkTheme) Color.White else Color.Black)
             )
         }
     }

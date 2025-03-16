@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,7 +60,10 @@ import com.example.moneyflow_jetpackcompose.component.TopBar
 import com.example.moneyflow_jetpackcompose.datastore.DataStoreManager
 import com.example.moneyflow_jetpackcompose.model.SubscriptionModel
 import com.example.moneyflow_jetpackcompose.ui.theme.CategoryColor
+import com.example.moneyflow_jetpackcompose.ui.theme.DarkBackgroundColor
 import com.example.moneyflow_jetpackcompose.ui.theme.DateColor
+import com.example.moneyflow_jetpackcompose.ui.theme.ThemeMode
+import com.example.moneyflow_jetpackcompose.ui.theme.ThemePreference
 import com.example.moneyflow_jetpackcompose.ui.theme.WhiteBackgroundColor
 import com.example.moneyflow_jetpackcompose.utils.uriToBase64
 import com.example.moneyflow_jetpackcompose.viewmodel.SubscriptionViewModel
@@ -73,6 +78,13 @@ import java.time.format.DateTimeFormatter
 fun EditSubscriptionScreen(navController: NavController, subscriptionModel: SubscriptionModel?, viewModel: SubscriptionViewModel = viewModel()) {
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
+    var themePreference = ThemePreference(context)
+    val themeMode = themePreference.themeFlow.collectAsState(initial = ThemeMode.SYSTEM.value).value
+    val isDarkTheme = when (ThemeMode.fromInt(themeMode)) {
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+    }
     var base64String by remember { mutableStateOf<String?>(subscriptionModel?.icon?:"") }
     var imgUrl by remember { mutableStateOf(subscriptionModel?.icon?:"") }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
@@ -112,7 +124,7 @@ fun EditSubscriptionScreen(navController: NavController, subscriptionModel: Subs
         modifier = Modifier.clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) {
             focusManager.clearFocus()
         },
-        containerColor = WhiteBackgroundColor,
+        containerColor = if (isDarkTheme) DarkBackgroundColor else WhiteBackgroundColor,
         topBar = {
             TopBar(
                 navigationIcon = {
@@ -121,7 +133,8 @@ fun EditSubscriptionScreen(navController: NavController, subscriptionModel: Subs
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = if (isDarkTheme) Color.White else Color.Black
                         )
                     }
                 },

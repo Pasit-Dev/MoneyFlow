@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,6 +34,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,7 +57,10 @@ import com.example.moneyflow_jetpackcompose.component.DataNotFound
 import com.example.moneyflow_jetpackcompose.component.TopBar
 import com.example.moneyflow_jetpackcompose.datastore.DataStoreManager
 import com.example.moneyflow_jetpackcompose.model.GoalModel
+import com.example.moneyflow_jetpackcompose.ui.theme.DarkBackgroundColor
 import com.example.moneyflow_jetpackcompose.ui.theme.PrimaryColor
+import com.example.moneyflow_jetpackcompose.ui.theme.ThemeMode
+import com.example.moneyflow_jetpackcompose.ui.theme.ThemePreference
 import com.example.moneyflow_jetpackcompose.ui.theme.WhiteBackgroundColor
 import com.example.moneyflow_jetpackcompose.utils.base64ToBitmap
 import com.example.moneyflow_jetpackcompose.utils.formatDate
@@ -66,6 +71,13 @@ import java.time.format.TextStyle
 @Composable
 fun GoalScreen(navController: NavController, goalViewModel: GoalViewModel = viewModel()) {
     val context = LocalContext.current
+    var themePreference = ThemePreference(context)
+    val themeMode = themePreference.themeFlow.collectAsState(initial = ThemeMode.SYSTEM.value).value
+    val isDarkTheme = when (ThemeMode.fromInt(themeMode)) {
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+    }
     var userId by remember { mutableStateOf("") }
     LaunchedEffect(Unit) {
         userId = DataStoreManager.getToken(context) ?: ""
@@ -78,7 +90,7 @@ fun GoalScreen(navController: NavController, goalViewModel: GoalViewModel = view
         }
     }
     Scaffold(
-        containerColor = WhiteBackgroundColor,
+        containerColor = if (isDarkTheme) DarkBackgroundColor else WhiteBackgroundColor,
         topBar = {
             TopBar(
                 title = "Goals"
@@ -122,9 +134,17 @@ fun GoalScreen(navController: NavController, goalViewModel: GoalViewModel = view
 fun GoalListItem(
     goalItem: GoalModel, onClick: () -> Unit
 ) {
+    val context = LocalContext.current
+    var themePreference = ThemePreference(context)
+    val themeMode = themePreference.themeFlow.collectAsState(initial = ThemeMode.SYSTEM.value).value
+    val isDarkTheme = when (ThemeMode.fromInt(themeMode)) {
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+    }
     Card(
         colors = CardDefaults.cardColors(
-            Color.White
+            if (isDarkTheme) Color.Black else Color.White
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -171,7 +191,7 @@ fun GoalListItem(
             ) {
                 Text(
                     text = goalItem.name,
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium.copy(color = if (isDarkTheme) Color.White else Color.Black)
                 )
                 Row {
                     Text(
@@ -208,7 +228,7 @@ fun GoalListItem(
                     Spacer(Modifier.width(8.dp)) // เพิ่มระยะห่างระหว่าง ProgressBar กับ Text
                     Text(
                         text = "${goalItem.currentAmount.toInt()} / ${goalItem.targetAmount.toInt()}",
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall.copy(Color.Gray)
                     )
                 }
             }

@@ -2,6 +2,7 @@ package com.example.moneyflow_jetpackcompose.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,16 +21,20 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.moneyflow_jetpackcompose.R
+import com.example.moneyflow_jetpackcompose.ui.theme.ThemeMode
+import com.example.moneyflow_jetpackcompose.ui.theme.ThemePreference
 
 @Composable
 fun NumericKeypad(
@@ -38,6 +43,14 @@ fun NumericKeypad(
     onDeleteClick: () -> Unit,
     onConfirmClick: () -> Unit
 ) {
+    val context = LocalContext.current
+    var themePreference = ThemePreference(context)
+    val themeMode = themePreference.themeFlow.collectAsState(initial = ThemeMode.SYSTEM.value).value
+    val isDarkTheme = when (ThemeMode.fromInt(themeMode)) {
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+    }
     // Calculate button height based on the grid's expected size
     val padding = 8.dp
     val buttonHeight = (100.dp * 2)
@@ -68,14 +81,15 @@ fun NumericKeypad(
                         modifier = Modifier
                             .aspectRatio(1f)
                             .clip(RoundedCornerShape(16.dp))
-                            .background(Color(0xFFF5F5F5))
+                            .background(if (isDarkTheme) Color.Black else Color(0xFFF5F5F5))
                             .clickable { onNumberClick(number) },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = number,
                             fontSize = 24.sp,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Medium,
+                            color = if (isDarkTheme) Color.White else Color.Black
                         )
                     }
                 }

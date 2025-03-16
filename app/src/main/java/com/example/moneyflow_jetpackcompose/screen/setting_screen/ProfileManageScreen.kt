@@ -144,7 +144,8 @@ fun ProfileManageScreen(navController: NavController, authViewModel: AuthViewMod
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = if (isDarkTheme) Color.White else Color.Black
                         )
                     }
                 },
@@ -211,7 +212,7 @@ fun ProfileManageScreen(navController: NavController, authViewModel: AuthViewMod
             Card(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(WhiteColor),
+                colors = CardDefaults.cardColors(if (isDarkTheme) Color.Black else Color.White),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Row(
@@ -242,7 +243,7 @@ fun ProfileManageScreen(navController: NavController, authViewModel: AuthViewMod
             Card(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(WhiteColor),
+                colors = CardDefaults.cardColors(if (isDarkTheme) Color.Black else Color.White),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Row(

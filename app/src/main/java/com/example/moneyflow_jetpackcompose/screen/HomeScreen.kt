@@ -53,7 +53,7 @@ fun HomeScreen() {
             GoalScreen(navController)
         }
         composable(BottomNavItem.Report.route) {
-            ReportScreen()
+            ReportScreen(navController)
         }
         composable(BottomNavItem.Setting.route) {
             SettingsScreen(navController)

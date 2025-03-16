@@ -55,11 +55,13 @@ import com.example.moneyflow_jetpackcompose.component.DataNotFound
 import com.example.moneyflow_jetpackcompose.component.ToggleButton
 import com.example.moneyflow_jetpackcompose.component.TopBar
 import com.example.moneyflow_jetpackcompose.datastore.DataStoreManager
+import com.example.moneyflow_jetpackcompose.ui.theme.BlackColor
 import com.example.moneyflow_jetpackcompose.ui.theme.DarkBackgroundColor
 import com.example.moneyflow_jetpackcompose.ui.theme.PrimaryColor
 import com.example.moneyflow_jetpackcompose.ui.theme.ThemeMode
 import com.example.moneyflow_jetpackcompose.ui.theme.ThemePreference
 import com.example.moneyflow_jetpackcompose.ui.theme.WhiteBackgroundColor
+import com.example.moneyflow_jetpackcompose.ui.theme.WhiteColor
 import com.example.moneyflow_jetpackcompose.utils.base64ToBitmap
 import com.example.moneyflow_jetpackcompose.utils.formatDate
 import com.example.moneyflow_jetpackcompose.utils.uriToBase64
@@ -180,13 +182,13 @@ fun SubscriptionScreen(navController: NavController, subscriptionViewModel: Subs
                                 }
                             },
                             headlineContent = {
-                                Text(subscription.name)
+                                Text(subscription.name, color = if (isDarkTheme) WhiteColor else BlackColor)
                             },
                             supportingContent = {
-                                Text(formatDate(subscription.currentBill))
+                                Text(formatDate(subscription.currentBill), color = if (isDarkTheme) WhiteColor else Color.Black)
                             },
                             trailingContent = {
-                                Text("฿${subscription.amount} / ${if (subscription.frequency == "monthly") "m" else "y"}", fontSize = 18.sp)
+                                Text("฿${subscription.amount} / ${if (subscription.frequency == "monthly") "m" else "y"}", fontSize = 18.sp, color = if (isDarkTheme) WhiteColor else Color.Black)
                             }
                         )
                     }

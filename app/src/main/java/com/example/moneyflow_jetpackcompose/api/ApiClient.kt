@@ -7,8 +7,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
 //    private  const val BASE_URL = "http://localhost:3000/"
-    private const val BASE_URL = "http://10.0.2.2:3000" // android emulator
-//    private const val BASE_URL = "http://10.0.3.2:3000" // genymotion emulator
+//    private const val BASE_URL = "http://10.0.2.2:3000" // android emulator
+    private const val BASE_URL = "http://10.0.3.2:4000" // genymotion emulator
 
     val gson: Gson? = GsonBuilder().serializeNulls().create()
     private val retrofit: Retrofit by lazy {

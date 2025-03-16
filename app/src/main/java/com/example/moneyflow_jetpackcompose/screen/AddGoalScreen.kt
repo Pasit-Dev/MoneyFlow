@@ -1,12 +1,14 @@
 package com.example.moneyflow_jetpackcompose.screen
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +38,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,7 +67,10 @@ import com.example.moneyflow_jetpackcompose.component.NumericKeypad
 import com.example.moneyflow_jetpackcompose.component.SelectedButton
 import com.example.moneyflow_jetpackcompose.component.TopBar
 import com.example.moneyflow_jetpackcompose.datastore.DataStoreManager
+import com.example.moneyflow_jetpackcompose.ui.theme.DarkBackgroundColor
 import com.example.moneyflow_jetpackcompose.ui.theme.DateColor
+import com.example.moneyflow_jetpackcompose.ui.theme.ThemeMode
+import com.example.moneyflow_jetpackcompose.ui.theme.ThemePreference
 import com.example.moneyflow_jetpackcompose.ui.theme.WhiteBackgroundColor
 import com.example.moneyflow_jetpackcompose.utils.base64ToBitmap
 import com.example.moneyflow_jetpackcompose.utils.formatDate
@@ -80,6 +86,13 @@ import java.time.format.DateTimeFormatter
 fun AddGoalScreen(navController: NavController, goalViewModel: GoalViewModel = viewModel()) {
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
+    var themePreference = ThemePreference(context)
+    val themeMode = themePreference.themeFlow.collectAsState(initial = ThemeMode.SYSTEM.value).value
+    val isDarkTheme = when (ThemeMode.fromInt(themeMode)) {
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+    }
     var base64String by remember { mutableStateOf<String?>(null) }
     var imgUrl by remember { mutableStateOf("") }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
@@ -110,7 +123,7 @@ fun AddGoalScreen(navController: NavController, goalViewModel: GoalViewModel = v
         modifier = Modifier.clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) {
             focusManager.clearFocus()
         },
-        containerColor = WhiteBackgroundColor,
+        containerColor = if (isDarkTheme) DarkBackgroundColor else WhiteBackgroundColor,
         topBar = {
             TopBar(
                 navigationIcon = {
@@ -119,7 +132,8 @@ fun AddGoalScreen(navController: NavController, goalViewModel: GoalViewModel = v
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = if (isDarkTheme) Color.White else Color.Black
                         )
                     }
                 },
@@ -194,7 +208,7 @@ fun AddGoalScreen(navController: NavController, goalViewModel: GoalViewModel = v
                         onConfirmClick = {
                             val startFormat =  startDate?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                             val endFormat =  endDate?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-
+                            Log.d("API", "CREATE NOW GOAL")
                            if (note.isNotEmpty()) {
                                 if (startDate != null && endDate != null) {
                                     val newGoalRequest = base64String?.let {

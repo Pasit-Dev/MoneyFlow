@@ -1,12 +1,10 @@
 package com.example.moneyflow_jetpackcompose.viewmodel
 
-import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.moneyflow_jetpackcompose.api.ApiClient
 import com.example.moneyflow_jetpackcompose.api.GoalRequest
@@ -14,7 +12,6 @@ import com.example.moneyflow_jetpackcompose.model.GoalModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.annotations.Async.Execute
 
 
 class GoalViewModel: ViewModel() {
@@ -64,6 +61,7 @@ class GoalViewModel: ViewModel() {
         viewModelScope.launch {
             try {
                 val response = api.createGoal(newGoal)
+                Log.d("API", "${response.body()}")
                 if( response.isSuccessful) {
                     response.body()?.data?.let {
                         withContext(Dispatchers.IO) {
@@ -102,10 +100,13 @@ class GoalViewModel: ViewModel() {
         }
     }
 
-    fun deleteGoal(id: Int) {
+    fun deleteGoal(id: Int, navController: NavController) {
+        Log.d("API", "Delete Goal")
         viewModelScope.launch {
             try {
+                Log.d("API", "Delete Goal 2")
                 val response = api.deleteGoal(id)
+                Log.d("API", "Response: ${response.body()}")
                 if (response.isSuccessful) {
                     response.body()?.let { res ->
                         if (_goal.value?.id == res.data?.id) {
@@ -113,6 +114,7 @@ class GoalViewModel: ViewModel() {
                         }
                         _goals.value = _goals.value.filter { it.id != res.data?.id }
                     }
+                    navController.popBackStack()
                 }
             } catch (e: Exception) {
                 Log.e("API", "Error: ${e.localizedMessage}")

@@ -11,6 +11,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -35,7 +36,7 @@ fun TopBar(title: String, actions: @Composable() (RowScope.() -> Unit) = {}, nav
         modifier = Modifier.fillMaxWidth().padding(end = 16.dp),
         navigationIcon = navigationIcon,
         title = {
-            Text(title, fontWeight = FontWeight.Medium)
+            Text(title, fontWeight = FontWeight.Medium, color = if (isDarkTheme) Color.White else Color.Black)
         },
         actions = actions
 

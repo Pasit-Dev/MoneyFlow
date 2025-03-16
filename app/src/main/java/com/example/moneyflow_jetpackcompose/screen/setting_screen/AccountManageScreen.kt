@@ -57,6 +57,7 @@ import com.example.moneyflow_jetpackcompose.component.DataNotFound
 import com.example.moneyflow_jetpackcompose.component.TopBar
 import com.example.moneyflow_jetpackcompose.datastore.DataStoreManager
 import com.example.moneyflow_jetpackcompose.model.AccountModel
+import com.example.moneyflow_jetpackcompose.ui.theme.BlackColor
 import com.example.moneyflow_jetpackcompose.ui.theme.DarkBackgroundColor
 import com.example.moneyflow_jetpackcompose.ui.theme.PrimaryColor
 import com.example.moneyflow_jetpackcompose.ui.theme.ThemeMode
@@ -92,7 +93,8 @@ fun AccountManageScreen(navController: NavController, viewModel: AccountViewMode
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = if (isDarkTheme) Color.White else Color.Black
                         )
                     }
                 },
@@ -144,20 +146,27 @@ fun AccountListItem(account: AccountModel, onUpdate: (String, Double) -> Unit, o
     var isDialogOpen by remember { mutableStateOf(false) }
     var editedName by remember { mutableStateOf(account.name) }
     var editedBalance by remember { mutableStateOf(account.balance.toString()) }
-
+    val context = LocalContext.current
+    var themePreference = ThemePreference(context)
+    val themeMode = themePreference.themeFlow.collectAsState(initial = ThemeMode.SYSTEM.value).value
+    val isDarkTheme = when (ThemeMode.fromInt(themeMode)) {
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clip(RoundedCornerShape(8.dp))
             .clickable { isDialogOpen = true }
-            .background(Color(0xFFEEEEEE))
+            .background(if (isDarkTheme) BlackColor else Color(0xFFEEEEEE))
             .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = account.name, style = MaterialTheme.typography.titleMedium)
-        Text(text = account.balance.toString(), style = MaterialTheme.typography.titleLarge)
+        Text(text = account.name, style = MaterialTheme.typography.titleMedium.copy(color = if (isDarkTheme) Color.White else Color.Black))
+        Text(text = account.balance.toString(), style = MaterialTheme.typography.titleLarge.copy(color = if (isDarkTheme) Color.White else Color.Black))
     }
 
     if (isDialogOpen) {

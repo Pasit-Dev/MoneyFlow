@@ -62,7 +62,8 @@ fun AppearanceScreen(navController: NavController) {
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint =  if (isDarkTheme) Color.White else Color.Black
                         )
                     }
                 },
@@ -78,7 +79,7 @@ fun AppearanceScreen(navController: NavController) {
                 }.padding(horizontal = 16.dp)
             ) {
 
-                Text(text = "System Theme")
+                Text(text = "System Theme", color = if (isDarkTheme) Color.White else Color.Black)
                 Spacer(modifier = Modifier.weight(1f))
                 RadioButton(
                     colors = RadioButtonColors(
@@ -101,7 +102,7 @@ fun AppearanceScreen(navController: NavController) {
                 }.padding(horizontal = 16.dp)
             ) {
 
-                Text(text = "Light Theme")
+                Text(text = "Light Theme", color = if (isDarkTheme) Color.White else Color.Black)
                 Spacer(modifier = Modifier.weight(1f))
                 RadioButton(
                     colors = RadioButtonColors(
@@ -123,7 +124,7 @@ fun AppearanceScreen(navController: NavController) {
                 }.padding(horizontal = 16.dp)
             ) {
 
-                Text(text = "Dark Theme")
+                Text(text = "Dark Theme", color = if (isDarkTheme) Color.White else Color.Black)
                 Spacer(modifier = Modifier.weight(1f))
                 RadioButton(
                     colors = RadioButtonColors(

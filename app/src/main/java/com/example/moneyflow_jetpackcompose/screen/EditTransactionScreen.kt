@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -61,8 +63,11 @@ import com.example.moneyflow_jetpackcompose.model.TransactionModel
 import com.example.moneyflow_jetpackcompose.ui.theme.AccountColor
 import com.example.moneyflow_jetpackcompose.ui.theme.BlackColor
 import com.example.moneyflow_jetpackcompose.ui.theme.CategoryColor
+import com.example.moneyflow_jetpackcompose.ui.theme.DarkBackgroundColor
 import com.example.moneyflow_jetpackcompose.ui.theme.DateColor
 import com.example.moneyflow_jetpackcompose.ui.theme.GrayColor
+import com.example.moneyflow_jetpackcompose.ui.theme.ThemeMode
+import com.example.moneyflow_jetpackcompose.ui.theme.ThemePreference
 import com.example.moneyflow_jetpackcompose.ui.theme.WhiteBackgroundColor
 import com.example.moneyflow_jetpackcompose.ui.theme.WhiteColor
 import com.example.moneyflow_jetpackcompose.viewmodel.AccountViewModel
@@ -84,6 +89,13 @@ fun EditTransactionScreen(
     categoryViewModel: CategoryViewModel = viewModel(), accountViewModel: AccountViewModel = viewModel(),
     transactionViewModel: TransactionViewModel = viewModel()) {
     val context = LocalContext.current
+    var themePreference = ThemePreference(context)
+    val themeMode = themePreference.themeFlow.collectAsState(initial = ThemeMode.SYSTEM.value).value
+    val isDarkTheme = when (ThemeMode.fromInt(themeMode)) {
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+    }
     val focusManager = LocalFocusManager.current
 
     // โหลดข้อมูล transactionModel ตั้งแต่เริ่ม
@@ -164,7 +176,7 @@ fun EditTransactionScreen(
         modifier = Modifier.clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) {
             focusManager.clearFocus()
         },
-        containerColor = WhiteBackgroundColor,
+        containerColor = if (isDarkTheme) DarkBackgroundColor else WhiteBackgroundColor,
         topBar = {
             TopBar(
                 navigationIcon = {
@@ -173,11 +185,12 @@ fun EditTransactionScreen(
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = if (isDarkTheme) Color.White else Color.Black
                         )
                     }
                 },
-                title = "Add Transaction",
+                title = "Edit Transaction",
                 actions = {}
             )
         }

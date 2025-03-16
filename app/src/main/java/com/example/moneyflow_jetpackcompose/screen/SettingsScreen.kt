@@ -81,9 +81,17 @@ fun SettingsScreen(navController: NavController) {
 
 @Composable
 fun SettingsItem(iconResId: Int, text: String, onClick: () -> Unit) {
+    val context = LocalContext.current
+    var themePreference = ThemePreference(context)
+    val themeMode = themePreference.themeFlow.collectAsState(initial = ThemeMode.SYSTEM.value).value
+    val isDarkTheme = when (ThemeMode.fromInt(themeMode)) {
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+    }
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).clip(shape = RoundedCornerShape(12.dp)).background(Color.White, shape = RoundedCornerShape(16.dp)).clickable {
+        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).clip(shape = RoundedCornerShape(12.dp)).background(if (isDarkTheme) Color.Black else Color.White, shape = RoundedCornerShape(16.dp)).clickable {
             onClick()
         }.padding(16.dp)) {
         Box(
@@ -92,7 +100,7 @@ fun SettingsItem(iconResId: Int, text: String, onClick: () -> Unit) {
             Icon(painter = painterResource(id = iconResId), contentDescription = null, modifier = Modifier.size(24.dp), tint = Color.White)
         }
         Spacer(modifier = Modifier.width(16.dp))
-        Text(text =text, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+        Text(text =text, fontSize = 16.sp, fontWeight = FontWeight.Medium, color = if (isDarkTheme) Color.White else Color.Black)
         Spacer(modifier = Modifier.weight(1f))
         Icon(Icons.AutoMirrored.Filled.ArrowForwardIos, contentDescription = text)
     }

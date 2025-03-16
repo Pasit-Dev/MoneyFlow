@@ -132,11 +132,12 @@ fun EditCategoryScreen(navController: NavController, categoryViewModel: Category
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = if (isDarkTheme) Color.White else Color.Black
                         )
                     }
                 },
-                title = "Add Category",
+                title = "Edit Category",
                 actions = {
                     IconButton(onClick = {
                         categoryModel?.let { categoryViewModel.deleteCategory(context, it.categoryId).let { navController.popBackStack() } }

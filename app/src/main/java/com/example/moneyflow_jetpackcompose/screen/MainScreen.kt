@@ -35,8 +35,8 @@ fun MainScreen() {
     } else {
         NavHost(
             navController = navController,
-            startDestination = "home"
-//            startDestination = if (userId.isNullOrEmpty()) "login" else "home"
+//            startDestination = "home"
+            startDestination = if (userId.isNullOrEmpty()) "login" else "home"
         ) {
             composable("login") { LoginScreen(navController) }
             composable("register") { RegisterScreen(navController) }

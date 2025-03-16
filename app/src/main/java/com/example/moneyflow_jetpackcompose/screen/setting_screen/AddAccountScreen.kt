@@ -86,7 +86,8 @@ fun AddAccountScreen(navController: NavController, viewModel: AccountViewModel =
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = if (isDarkTheme) Color.White else Color.Black
                         )
                     }
                 },
@@ -102,7 +103,7 @@ fun AddAccountScreen(navController: NavController, viewModel: AccountViewModel =
             Spacer(Modifier.height(64.dp)) // Space at the top of the screen
             Text(amount, fontSize = 48.sp, fontWeight = FontWeight.Medium, color = if (amount == "0.00") Color.Gray else Color.Black)
             Spacer(Modifier.height(16.dp))
-            Text("เงินตั้งต้น")
+            Text("เงินตั้งต้น", color = Color.Gray)
             Spacer(Modifier.height(32.dp))
             InputField(
                 text = "Enter account name",

@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,6 +50,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,6 +65,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.moneyflow_jetpackcompose.R
@@ -71,11 +74,15 @@ import com.example.moneyflow_jetpackcompose.component.InputField
 import com.example.moneyflow_jetpackcompose.component.SelectedButton
 import com.example.moneyflow_jetpackcompose.component.TopBar
 import com.example.moneyflow_jetpackcompose.model.GoalModel
+import com.example.moneyflow_jetpackcompose.ui.theme.DarkBackgroundColor
 import com.example.moneyflow_jetpackcompose.ui.theme.DateColor
 import com.example.moneyflow_jetpackcompose.ui.theme.PrimaryColor
+import com.example.moneyflow_jetpackcompose.ui.theme.ThemeMode
+import com.example.moneyflow_jetpackcompose.ui.theme.ThemePreference
 import com.example.moneyflow_jetpackcompose.ui.theme.WhiteBackgroundColor
 import com.example.moneyflow_jetpackcompose.utils.formatDate
 import com.example.moneyflow_jetpackcompose.utils.uriToBase64
+import com.example.moneyflow_jetpackcompose.viewmodel.GoalViewModel
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -85,9 +92,17 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun GoalDetailsScreen(
     navController: NavController,
-    goalItem: GoalModel?
+    goalItem: GoalModel?,
+    viewModel: GoalViewModel = viewModel()
 ) {
     val context = LocalContext.current
+    var themePreference = ThemePreference(context)
+    val themeMode = themePreference.themeFlow.collectAsState(initial = ThemeMode.SYSTEM.value).value
+    val isDarkTheme = when (ThemeMode.fromInt(themeMode)) {
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+    }
     val focusManager = LocalFocusManager.current
     var base64String by remember { mutableStateOf<String?>(null) }
     var imgUrl by remember { mutableStateOf("") }
@@ -112,18 +127,20 @@ fun GoalDetailsScreen(
         return
     }
     Scaffold(
-        containerColor = WhiteBackgroundColor,
+        containerColor = if (isDarkTheme) DarkBackgroundColor else WhiteBackgroundColor,
         topBar = {
             TopBar(
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = if (isDarkTheme) Color.White else Color.Black)
                     }
                 },
                 title = "Goal Details",
                 actions = {
                     IconButton(
-                        onClick = { /* Handle icon edit */ },
+                        onClick = { viewModel.deleteGoal(goalItem.id, navController)
+
+                                  },
                         modifier = Modifier
                             .background(Color.Red, RoundedCornerShape(8.dp)).size(32.dp)
                     ) {
@@ -219,27 +236,27 @@ fun GoalDetailsScreen(
                 Spacer(Modifier.width(8.dp)) // เพิ่มระยะห่างระหว่าง ProgressBar กับ Text
                 Text(
                     text = "${goalItem.currentAmount.toInt()} / ${goalItem.targetAmount.toInt()}",
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray)
                 )
             }
             Spacer(Modifier.height(16.dp))
-            LazyColumn {
-                items(listOf("1","2","3","4","5","6","7","8","9","10")) {
-                    ListItem(
-                        colors = ListItemDefaults.colors(Color.Transparent),
-                        leadingContent = { Box(modifier = Modifier.background(PrimaryColor, RoundedCornerShape(12.dp)).padding(8.dp)) {
-                            Icon(Icons.Filled.Subscriptions, contentDescription = null, tint = Color.White)
-                        } },
-                        headlineContent = { Text("Headline Content") },
-                        supportingContent = { Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Filled.DateRange, contentDescription = null, Modifier.size(16.dp), Color.Gray)
-                            Spacer(Modifier.width(8.dp))
-                            Text("22 Dec 2025", color = Color.Gray)
-                        } },
-                        trailingContent = { Text("3000 THB", color = Color(0xFF63CD81)) }
-                    )
-                }
-            }
+//            LazyColumn {
+//                items(listOf("1","2","3","4","5","6","7","8","9","10")) {
+//                    ListItem(
+//                        colors = ListItemDefaults.colors(Color.Transparent),
+//                        leadingContent = { Box(modifier = Modifier.background(PrimaryColor, RoundedCornerShape(12.dp)).padding(8.dp)) {
+//                            Icon(Icons.Filled.Subscriptions, contentDescription = null, tint = Color.White)
+//                        } },
+//                        headlineContent = { Text("Headline Content") },
+//                        supportingContent = { Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+//                            Icon(Icons.Filled.DateRange, contentDescription = null, Modifier.size(16.dp), Color.Gray)
+//                            Spacer(Modifier.width(8.dp))
+//                            Text("22 Dec 2025", color = Color.Gray)
+//                        } },
+//                        trailingContent = { Text("3000 THB", color = Color(0xFF63CD81)) }
+//                    )
+//                }
+//            }
         }
     }
 }
